@@ -1,2 +1,4 @@
-go build -o shoot cmd/web.go
-./shoot
+rm bin/shoot
+
+go build -o bin/shoot cmd/web.go
+./bin/shoot -v

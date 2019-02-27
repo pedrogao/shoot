@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/PedroGao/shoot/config"
 	"github.com/PedroGao/shoot/model"
 	"github.com/PedroGao/shoot/router"
@@ -13,13 +14,22 @@ import (
 	"time"
 )
 
+const (
+	VERSION = "0.0.1-alpha1"
+)
+
 var (
-	wcfg = pflag.StringP("config", "c", "", "config file path")
+	wcfg    = pflag.StringP("config", "c", "", "config file path")
+	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
 func main() {
 	// parse the flags
 	pflag.Parse()
+
+	if *version {
+		log.Printf("😏 current app version is: %s", fmt.Sprintf("\x1b[33m%s\x1b[0m", VERSION))
+	}
 
 	// init config from file
 	if err := config.Init(*wcfg); err != nil {
@@ -31,7 +41,7 @@ func main() {
 	defer model.Close()
 
 	app := echo.New()
-	//app.HideBanner = true
+	app.HideBanner = true
 	app.Debug = true
 
 	// load middleware and routes
