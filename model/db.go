@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-var DB *xorm.Engine
+var Db *xorm.Engine
 
 func openDB(username, password, addr, name string) *xorm.Engine {
 	config := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=%t&loc=%s",
@@ -47,9 +47,13 @@ func InitLocal() *xorm.Engine {
 }
 
 func Init() {
-	DB = InitLocal()
+	Db = InitLocal()
+}
+
+func CreateTables() {
+	log.Println(Db.CreateTables(User{}, Article{}))
 }
 
 func Close() {
-	DB.Close()
+	log.Println(Db.Close())
 }

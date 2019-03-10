@@ -20,7 +20,7 @@ type Book struct {
 // add db query here
 func GetBookById(id int) (*Book, error) {
 	var book = &Book{Id: id}
-	ok, err := DB.Get(book)
+	ok, err := Db.Get(book)
 	if !ok {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func GetBookById(id int) (*Book, error) {
 
 func SearchBookByKeyword(keyword string) (*Book, error) {
 	book := new(Book)
-	ok, _ := DB.Where(builder.Like{"title", keyword}).Get(book)
+	ok, _ := Db.Where(builder.Like{"title", keyword}).Get(book)
 	if !ok {
 		return nil, errors.New("未找到任何相关书籍")
 	}

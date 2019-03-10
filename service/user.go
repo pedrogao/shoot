@@ -1,38 +1,34 @@
 package service
 
 import (
-	"fmt"
 	"github.com/PedroGao/shoot/model"
 	"github.com/PedroGao/shoot/utils"
 	"sync"
 )
 
-func ListUser() ([]*model.UserModel, error) {
+func ListUser() ([]*model.User, error) {
 	// 1.新建存放用户信息的数组
-	infos := make([]*model.UserModel, 0)
+	infos := make([]*model.User, 0)
 	// 2.从数据库查询用户信息
-	users := []*model.UserModel{
+	users := []*model.User{
 		{
 			Id:       1,
-			Username: "pedro",
-			SayHello: "world",
+			Nickname: "pedro",
 			Password: "123456",
 		},
 		{
 			Id:       2,
-			Username: "pedro1",
-			SayHello: "world6",
+			Nickname: "pedro1",
 			Password: "123456",
 		},
 		{
 			Id:       3,
-			Username: "pedro2",
-			SayHello: "world0",
+			Nickname: "pedro2",
 			Password: "123456",
 		},
 	}
 	// 3. 新建存放用户id的数组
-	var ids []uint64
+	var ids []int
 	//ids := make([]uint64, 0)
 	for _, user := range users {
 		ids = append(ids, user.Id)
@@ -43,7 +39,7 @@ func ListUser() ([]*model.UserModel, error) {
 	// 5. 新建用户列表映射
 	userList := model.UserList{
 		Lock:  new(sync.Mutex),
-		IdMap: make(map[uint64]*model.UserModel, len(users)),
+		IdMap: make(map[int]*model.User, len(users)),
 	}
 
 	// 6. 新建错误、完成通道
@@ -54,7 +50,7 @@ func ListUser() ([]*model.UserModel, error) {
 	// 7. 并发处理数据
 	for _, u := range users {
 		wg.Add(1)
-		go func(u *model.UserModel) {
+		go func(u *model.User) {
 			defer wg.Done()
 
 			shortId, err := utils.GenShortId()
@@ -68,10 +64,9 @@ func ListUser() ([]*model.UserModel, error) {
 			userList.Lock.Lock()
 			defer userList.Lock.Unlock()
 			// 以 key 为 id，value 为 userInfo填充map
-			userList.IdMap[u.Id] = &model.UserModel{
+			userList.IdMap[u.Id] = &model.User{
 				Id:       u.Id,
-				Username: u.Username,
-				SayHello: fmt.Sprintf("Hello %s", shortId),
+				Nickname: u.Nickname + shortId,
 				Password: u.Password,
 			}
 		}(u)

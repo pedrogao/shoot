@@ -3,7 +3,7 @@ addr: :3000
 name: jerry
 
 db:
-  name: lin-cms
+  name: blog
   addr: 127.0.0.1:3306
   username: root
   password: 123456

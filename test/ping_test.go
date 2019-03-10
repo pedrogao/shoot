@@ -39,6 +39,8 @@ func TestUserLogin(t *testing.T) {
 	bytes := w.Body.Bytes()
 	access := jsoniter.Get(bytes, "access_token")
 	refresh := jsoniter.Get(bytes, "refresh_token")
+	t.Log(access.ToString())
+	t.Log(refresh.ToString())
 	assert.NotEqual(t, "", refresh.ToString())
 	assert.NotEqual(t, "greeting from pedro", access.ToString())
 }

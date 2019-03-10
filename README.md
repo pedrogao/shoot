@@ -16,12 +16,13 @@ export JERRY_ADDR=:5000 && ./shoot
 
 如果失败走其它字段，前端会在reject中拿到异常信息，因此没必要通过其它字段来判断是否正确
 
+**异常返回信息**
+
 ```json
 {
   "err_code": 0,
   "message": "ok!",
-  "url": "",
-  "data": {}
+  "url": ""
 }
 ```
 
@@ -30,7 +31,15 @@ export JERRY_ADDR=:5000 && ./shoot
 | err_code | 判断当前的请求是否异常，0 表示成功，其它均为异常         |    int |
 | message  |        返回的信息，成功和异常均会返回信息              | string |
 | url      |       如果出现异常，则返回请求的 url 路径             | string |
-| data     |            如果请求成功，返回的数据项                 | string | object |
+
+**正常返回的信息**
+
+```json
+{
+  "field": "",
+  "some": {}
+}
+```
 
 ## TODO LIST
 

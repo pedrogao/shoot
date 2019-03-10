@@ -39,7 +39,7 @@ func SearchBook(c echo.Context) error {
 		return Err.ParamsErr.Set("参数错误，关键字必须有效词")
 	}
 	// limit 5 for test
-	err = model.DB.Where(builder.Like{"title", keyword}).Limit(5).Find(&books)
+	err = model.Db.Where(builder.Like{"title", keyword}).Limit(5).Find(&books)
 	if err != nil {
 		return Err.ParamsErr.Set(err.Error())
 	}

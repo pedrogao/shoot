@@ -2,6 +2,7 @@ package token
 
 import (
 	"errors"
+	"github.com/PedroGao/shoot/libs/enum"
 	"github.com/dgrijalva/jwt-go"
 	"strings"
 	"time"
@@ -46,14 +47,14 @@ func (j *Jwt) GenerateTokens(identify string) (string, string, error) {
 }
 
 func (j *Jwt) GenerateAccessToken(identify string) (string, error) {
-	return j.generateToken(j.AccessTokenExpireTime, identify)
+	return j.generateToken(j.AccessTokenExpireTime, identify, enum.ACCESS)
 }
 
 func (j *Jwt) GenerateRefreshToken(identify string) (string, error) {
-	return j.generateToken(j.RefreshTokenExpireTime, identify)
+	return j.generateToken(j.RefreshTokenExpireTime, identify, enum.REFRESH)
 }
 
-func (j *Jwt) generateToken(timeOut time.Duration, identify string) (string, error) {
+func (j *Jwt) generateToken(timeOut time.Duration, identify string, tokenType int) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	expire := time.Now().Add(timeOut)
@@ -61,20 +62,22 @@ func (j *Jwt) generateToken(timeOut time.Duration, identify string) (string, err
 	claims["exp"] = expire.Unix()
 	// identify express username
 	claims["identify"] = identify
+	// token type
+	claims["type"] = tokenType
 	// get the exp time
 	//exp := int64(claims["exp"].(float64))
 	return token.SignedString(j.Key)
 }
 
 func (j *Jwt) VerifyAccessToken(authHeader string) (string, error) {
-	return j.verifyToken(authHeader, j.AccessTokenExpireTime)
+	return j.verifyToken(authHeader, j.AccessTokenExpireTime, enum.ACCESS)
 }
 
 func (j *Jwt) VerifyRefreshToken(authHeader string) (string, error) {
-	return j.verifyToken(authHeader, j.RefreshTokenExpireTime)
+	return j.verifyToken(authHeader, j.RefreshTokenExpireTime, enum.REFRESH)
 }
 
-func (j *Jwt) verifyToken(authHeader string, timeOut time.Duration) (string, error) {
+func (j *Jwt) verifyToken(authHeader string, timeOut time.Duration, tokenType int) (string, error) {
 	var (
 		tokenStr string
 	)
@@ -95,9 +98,12 @@ func (j *Jwt) verifyToken(authHeader string, timeOut time.Duration) (string, err
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	expire := int64(claims["exp"].(float64))
-
 	if expire > time.Now().Add(timeOut).Unix() {
 		return "", errors.New("令牌过期")
+	}
+	tokType := claims["type"].(int)
+	if tokenType != tokType {
+		return "", errors.New("令牌类型错误")
 	}
 	return claims["identify"].(string), nil
 }

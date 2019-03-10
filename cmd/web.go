@@ -38,6 +38,7 @@ func main() {
 
 	// init db
 	model.Init()
+	model.CreateTables()
 	defer model.Close()
 
 	app := echo.New()
