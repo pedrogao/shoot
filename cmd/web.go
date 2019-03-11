@@ -23,23 +23,19 @@ var (
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
-func main() {
+func CreateApp() *echo.Echo {
 	// parse the flags
 	pflag.Parse()
-
 	if *version {
 		log.Printf("😏 current app version is: %s", fmt.Sprintf("\x1b[33m%s\x1b[0m", VERSION))
 	}
-
 	// init config from file
 	if err := config.Init(*wcfg); err != nil {
 		log.Fatal(err)
 	}
-
 	// init db
 	model.Init()
 	model.CreateTables()
-	defer model.Close()
 
 	app := echo.New()
 	app.HideBanner = true
@@ -47,14 +43,18 @@ func main() {
 
 	// load middleware and routes
 	router.Load(app)
+	return app
+}
 
+func main() {
+	app := CreateApp()
+	defer model.Close()
 	// test api
 	app.GET("/", func(c echo.Context) error {
 		return c.JSON(200, echo.Map{
 			"msg": "greeting from pedro",
 		})
 	})
-
 	// ping goroutine for check app is alive or not
 	go func() {
 		if err := ping(); err != nil {
@@ -62,7 +62,6 @@ func main() {
 		}
 		log.Println("The router has been deployed successfully.")
 	}()
-
 	// run
 	app.Logger.Fatal(app.Start(viper.GetString("addr")))
 }

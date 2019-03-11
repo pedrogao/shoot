@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/PedroGao/shoot/model"
 	"github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -24,6 +25,7 @@ func TestPing(t *testing.T) {
 
 func TestUserLogin(t *testing.T) {
 	app := setupApp()
+	defer model.Close()
 
 	w := httptest.NewRecorder()
 

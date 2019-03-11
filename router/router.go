@@ -40,6 +40,7 @@ func Load(app *echo.Echo, mw ...echo.MiddlewareFunc) *echo.Echo {
 
 	// mount routes
 	app.POST("/login", controller.Login)
+	app.POST("/register", controller.Register)
 
 	user := app.Group("/user")
 	user.GET("/", controller.GetUsers)
